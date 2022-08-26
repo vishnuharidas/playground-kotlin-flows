@@ -6,10 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.iamvishnu.samples.flowing.ui.details.DetailsScreen
+import com.iamvishnu.samples.flowing.ui.home.HomeScreen
 import com.iamvishnu.samples.flowing.ui.theme.FlowingTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,22 +26,42 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+
+                    val navController = rememberNavController()
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = "home"
+                    ) {
+
+                        composable("home") {
+
+                            HomeScreen(
+                                onDetails = {
+                                    navController.navigate("details/$it")
+                                }
+                            )
+
+                        }
+
+                        composable(
+                            "details/{itemId}",
+                            arguments = listOf(
+                                navArgument("itemId") { type = NavType.StringType }
+                            )
+                        ) {
+
+                            DetailsScreen(
+                                id = it.arguments?.getString("itemId") ?: "",
+                            )
+
+                        }
+
+                    }
+
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    FlowingTheme {
-        Greeting("Android")
-    }
-}
