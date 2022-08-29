@@ -8,11 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.iamvishnu.samples.flowing.data.FakeDataRepository
 import com.iamvishnu.samples.flowing.data.model.DummyPost
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
-    private val repo = FakeDataRepository()
+    private val repo = FakeDataRepository.repository
 
     private val _itemsList = mutableStateListOf<DummyPost>()
     val itemsList: List<DummyPost> = _itemsList
@@ -22,14 +25,11 @@ class HomeViewModel : ViewModel() {
 
     init {
 
-        viewModelScope.launch {
+        // Updates coming from other screens
+        repo.updatesFlow
+            .onEach { newPost ->
 
-            // Updates coming from other screens
-            repo.updatesFlow.collect { newPost ->
-
-                println("New: $newPost")
-
-                if (newPost == null) return@collect
+                if (newPost == null) return@onEach
 
                 _itemsList.find { it.id == newPost.id }?.let {
 
@@ -38,9 +38,11 @@ class HomeViewModel : ViewModel() {
                     _itemsList[index] = newPost
 
                 }
-
             }
-        }
+            .catch {
+                _state.value = HomeUiState.Error(it.message ?: "Unknown error")
+            }
+            .launchIn(viewModelScope)
 
         fetchData()
 
@@ -89,4 +91,5 @@ sealed class HomeUiState {
     object None : HomeUiState()
     object Loading : HomeUiState()
     object Success : HomeUiState()
+    data class Error(val error: String) : HomeUiState()
 }

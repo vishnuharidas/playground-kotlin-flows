@@ -36,6 +36,8 @@ fun HomeScreen(
             ) {
                 onDetails(it)
             }
+
+            is HomeUiState.Error -> Text("Error!")
         }
 
     }
