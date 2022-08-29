@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.launchIn
 
 class FakeDataRepository {
 
+    companion object {
+        val repository = FakeDataRepository()
+    }
+
     private val list = mutableListOf<DummyPost>()
 
     private val _updates = MutableStateFlow<DummyPost?>(null)
@@ -28,6 +32,16 @@ class FakeDataRepository {
             emit(post)
 
             delay(500)
+        }
+    }
+
+    fun getPost(id: String) = flow {
+        val item = list.find { it.id == id }
+
+        if (item != null) {
+            emit(item)
+        } else {
+            throw Exception("Unable to find the item!!")
         }
     }
 
