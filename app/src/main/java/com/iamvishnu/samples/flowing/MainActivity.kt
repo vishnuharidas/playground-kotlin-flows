@@ -53,7 +53,9 @@ class MainActivity : ComponentActivity() {
 
                             DetailsScreen(
                                 id = it.arguments?.getString("itemId") ?: "",
-                            )
+                            ) {
+                                navController.navigate("details/$it")
+                            }
 
                         }
 

@@ -9,7 +9,8 @@ import com.iamvishnu.samples.flowing.ui.common.PostItem
 
 @Composable
 fun DetailsScreen(
-    id: String
+    id: String,
+    onDetails: (String) -> Unit,
 ) {
 
     val vm: DetailsViewModel = viewModel()
@@ -37,7 +38,7 @@ fun DetailsScreen(
                     post = post,
                     onLike = { vm.likePost(post.id) },
                     onShare = { vm.sharePost(post.id) },
-                    onDetails = {}
+                    onDetails = { onDetails(post.id) }
                 )
             } else {
                 Text("No post found.")
