@@ -9,7 +9,6 @@ import com.iamvishnu.samples.flowing.data.model.DummyPost
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class DetailsViewModel : ViewModel() {
 
@@ -68,17 +67,13 @@ class DetailsViewModel : ViewModel() {
 
     fun likePost(postId: String) {
 
-        viewModelScope.launch {
-            repo.addLike(postId)
-        }
+        repo.addLike(postId)
 
     }
 
     fun sharePost(postId: String) {
 
-        viewModelScope.launch {
-            repo.addShare(postId)
-        }
+        repo.addShare(postId)
 
     }
 

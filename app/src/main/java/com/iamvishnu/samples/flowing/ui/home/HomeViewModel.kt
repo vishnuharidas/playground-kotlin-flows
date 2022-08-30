@@ -71,17 +71,13 @@ class HomeViewModel : ViewModel() {
 
     fun likePost(postId: String) {
 
-        viewModelScope.launch {
-            repo.addLike(postId)
-        }
+        repo.addLike(postId)
 
     }
 
     fun sharePost(postId: String) {
 
-        viewModelScope.launch {
-            repo.addShare(postId)
-        }
+        repo.addShare(postId)
 
     }
 

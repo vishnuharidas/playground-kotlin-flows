@@ -7,7 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.launch
 
 class FakeDataRepository {
 
@@ -45,42 +45,36 @@ class FakeDataRepository {
         }
     }
 
-    fun addLike(id: String) = flow {
+    fun addLike(id: String) {
 
-        println("AddLike: $id")
+        CoroutineScope(Dispatchers.IO).launch {
 
-        list.find { it.id == id }?.let {
+            list.find { it.id == id }?.let {
 
-            val index = list.indexOf(it)
+                val index = list.indexOf(it)
 
-            list[index] = it.copy(likes = it.likes + 1)
+                list[index] = it.copy(likes = it.likes + 1)
 
-            emit(list[index])
+                // 1 update for all the listeners
+                _updates.emit(list[index])
 
-            // 1 update for all the listeners
-            _updates.emit(list[index])
-
+            }
         }
+    }
 
-    }.launchIn(CoroutineScope(Dispatchers.IO))
+    fun addShare(id: String) {
 
-    fun addShare(id: String) = flow {
+        CoroutineScope(Dispatchers.IO).launch {
+            list.find { it.id == id }?.let {
 
-        println("AddShare: $id")
+                val index = list.indexOf(it)
 
-        list.find { it.id == id }?.let {
+                list[index] = it.copy(shares = it.shares + 1)
 
-            val index = list.indexOf(it)
-
-            list[index] = it.copy(shares = it.shares + 1)
-
-            emit(list[index])
-
-            // 1 update for all the listeners
-            _updates.emit(list[index])
-
+                // 1 update for all the listeners
+                _updates.emit(list[index])
+            }
         }
-
-    }.launchIn(CoroutineScope(Dispatchers.IO))
+    }
 
 }
