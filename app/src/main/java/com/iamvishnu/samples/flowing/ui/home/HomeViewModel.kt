@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iamvishnu.samples.flowing.data.FakeDataRepository
+import com.iamvishnu.samples.flowing.data.TickRepository
 import com.iamvishnu.samples.flowing.data.model.DummyPost
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -22,6 +24,8 @@ class HomeViewModel : ViewModel() {
 
     private val _state = mutableStateOf<HomeUiState>(HomeUiState.None)
     val state: State<HomeUiState> = _state
+
+    var jobs = mutableListOf<Job>()
 
     init {
 
@@ -73,11 +77,23 @@ class HomeViewModel : ViewModel() {
 
         repo.addLike(postId)
 
+        jobs.add(viewModelScope.launch {
+            TickRepository.ticker.collect {
+                println("Ticking in HomeVM #$it")
+            }
+        })
+
     }
 
     fun sharePost(postId: String) {
 
         repo.addShare(postId)
+
+        jobs.forEach {
+            it.cancel()
+        }
+
+        jobs.clear()
 
     }
 

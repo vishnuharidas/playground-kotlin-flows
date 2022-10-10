@@ -5,10 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iamvishnu.samples.flowing.data.FakeDataRepository
+import com.iamvishnu.samples.flowing.data.TickRepository
 import com.iamvishnu.samples.flowing.data.model.DummyPost
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class DetailsViewModel : ViewModel() {
 
@@ -39,6 +41,12 @@ class DetailsViewModel : ViewModel() {
     }
 
     fun getPost(postId: String) {
+
+        viewModelScope.launch {
+            TickRepository.ticker.collect {
+                println("Ticking in DetailsVM #$it")
+            }
+        }
 
         _state.value = _state.value.copy(
             loading = true,
